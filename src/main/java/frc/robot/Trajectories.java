@@ -8,8 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 
@@ -200,7 +199,7 @@ public class Trajectories {
         TrajectoryGenerator.generateTrajectory(
             new Pose2d(AutoConstants.kFieldEndXCoordinate - 1.7, 4.45, new Rotation2d(0)), 
             List.of(), 
-            new Pose2d(AutoConstants.kFieldEndXCoordinate - 5.7,4.45, new Rotation2d(0)), 
+            new Pose2d(AutoConstants.kFieldEndXCoordinate - 5.7, 4.45, new Rotation2d(0)), 
             reverseConfig);
     
     public static final Trajectory backAutoBlueLeft = 
@@ -212,9 +211,17 @@ public class Trajectories {
     
     public static final Trajectory backAutoRedLeft = 
             TrajectoryGenerator.generateTrajectory(
-                new Pose2d(AutoConstants.kFieldEndXCoordinate - 1.7, 1.06, new Rotation2d(0)), 
+                new Pose2d(0, 0, new Rotation2d(0)), 
                 List.of(), 
-                new Pose2d(AutoConstants.kFieldEndXCoordinate - 5.95,1.06, new Rotation2d(0)), 
+                new Pose2d(2,0.1, new Rotation2d(0)), 
+                reverseConfig);
+                
+
+    public static final Trajectory forwardAutoRedLeft = 
+            TrajectoryGenerator.generateTrajectory(
+                new Pose2d(AutoConstants.kFieldEndXCoordinate - 5.95, 1.06, new Rotation2d(0)), 
+                List.of(), 
+                new Pose2d(AutoConstants.kFieldEndXCoordinate - 1.7,1.06, new Rotation2d(0)), 
                 reverseConfig);
         
         
@@ -246,8 +253,8 @@ public class Trajectories {
     //Go Straight
     public static final Trajectory goStraight =
     TrajectoryGenerator.generateTrajectory(
-        new Pose2d(0, 0, new Rotation2d(0)),
-        List.of(new Translation2d(3, 0.1)),
-        new Pose2d(3, 0, new Rotation2d(0)),
+        new Pose2d(0, 5, new Rotation2d(0)),
+        List.of(),
+        new Pose2d(2, 6, new Rotation2d(0)),
         config);
 }

@@ -55,7 +55,7 @@ public final class Constants {
     public static final boolean kFrontLeftTurningMotorReversed = true;
 
     public static final boolean kFrontRightDriveMotorReversed = true;
-    public static final boolean kRearRightDriveMotorReversed = true;
+    public static final boolean kRearRightDriveMotorReversed = false;
     public static final boolean kRearLeftDriveMotorReversed = true;
     public static final boolean kFrontLeftDriveMotorReversed = true;
 
@@ -72,10 +72,10 @@ public final class Constants {
     public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
 
     //Fix Front and rear left offsets (radians)
-    public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 0.04418;//174
-    public static final double kRearRightDriveAbsoluteEncoderOffsetRad = 0.4504;//5
-    public static final double kRearLeftDriveAbsoluteEncoderOffsetRad = 0.1489;//-10
-    public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0.1992;//-4
+    public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(0);//0.04418;//174
+    public static final double kRearRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(180);//0.4504;//5
+    public static final double kRearLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(0);//0.1489;//-10
+    public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = Math.toRadians(0);//0.1992;//-4
 
     // Distance between centers of right and left wheels on robot
     public static final double kTrackWidth = 0.533;
@@ -88,10 +88,10 @@ public final class Constants {
 
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2), //+- = Front Right  ++
-            new Translation2d(kWheelBase / 2, kTrackWidth / 2), //++ = Front Left  -+
-            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2), //-- = Rear Right  +-
-            new Translation2d(-kWheelBase / 2, kTrackWidth / 2)); //-+ = Rear Left --
+            new Translation2d(kWheelBase / 2, -kTrackWidth / 2), //+- = Front Right 
+            new Translation2d(kWheelBase / 2, kTrackWidth / 2), //++ = Front Left 
+            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2), //-- = Rear Right 
+            new Translation2d(-kWheelBase / 2, kTrackWidth / 2)); //-+ = Rear Left
 
 
     public static final boolean kGyroReversed = false;
@@ -172,7 +172,7 @@ public final class Constants {
 
   public static final class IntakeConstants {
     public static final int kIntakeMotor = 9;
-    public static final double kIntakeMotorSpeed = 0.7; //value from 0-1
+    public static final double kIntakeMotorSpeed = 0.4; //value from 0-1
   }
 
   public static final class ShooterConstants {
@@ -182,6 +182,10 @@ public final class Constants {
     public static final double kShooterMotorSpeed = 1.0;
   }
 
+  public static final class TrapConstants {
+    public static final  int kTrapMotorPort = 15;
+    public static final  double kTrapSpeed = 0.3;
+  }
   public static final class PivotConstants {
     public static final int kPivotMotorRight = 11;
     public static final int kPivotMotorLeft = 12;
@@ -191,8 +195,8 @@ public final class Constants {
     //Pivot Positions
     public static final double kMaxPivotPosition = 180;
     public static final double kMinPivotPosition = 75;
-    public static final double kAmpPosition = 92;
-    public static final double shootUpClosePosition = 175; //position of pivot encoder for shooting when up against the speaker
+    public static final double kAmpPosition = 90;
+    public static final double shootUpClosePosition = 170; //position of pivot encoder for shooting when up against the speaker
     public static final double shootSideRingsPosition = 170;
 
     public static final double kPivotOffset = 181;
@@ -205,9 +209,9 @@ public final class Constants {
     public static final double kV_Pivot = 1.95;
     public static final double kA_Pivot = 0.4;
 
-    public static final double kP_Pivot = 0.5;
-    public static final double kI_Pivot = 0.01;
-    public static final double kD_Pivot = 0.2;
+    public static final double kP_Pivot = 0.15;
+    public static final double kI_Pivot = 0.00;
+    public static final double kD_Pivot = 0.02;
 
     public static final double kAprilCamSpeedFactor = 0.05;
     public static final double kAprilCamMaxSpeedMetersPerSecond = 0.69;
@@ -217,7 +221,7 @@ public final class Constants {
     //TEST Simple goToSetpoint() method constants
     public static final double tinyPivotSpeed = 0.7;
     public static final double tinyPivotAccel = 0.05;
-    public static final double deadbandAngle = 8;
+    public static final double deadbandAngle = 3;
 
     public static final double pivotSetpointFactor = 1;
   }
@@ -226,6 +230,8 @@ public final class Constants {
     public static final int kClimbMotorRight = 13;
     public static final int kClimbMotorLeft = 14;
     public static final double kClimbMotorSpeed = 0.6; //value from 0-1
+
+    public static final double encoderUpperLimit = 1000;
   }
   
   public static final class CameraConstants {

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.MathMethods;
 
 public class PivotSubsystem extends SubsystemBase {
@@ -31,6 +32,7 @@ public class PivotSubsystem extends SubsystemBase {
         // Configures the encoder to return a distance for every rotation
         pivotAbsEncoder.setDistancePerRotation(PivotConstants.disPerRot);
         offset = pivotAbsEncoder.getDistance() - PivotConstants.kPivotOffset;
+        pivotPIDController.setTolerance(PivotConstants.deadbandAngle);
     }
 
 
@@ -40,7 +42,7 @@ public class PivotSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Pivot Encoder Connected?", pivotAbsEncoder.isConnected());
         SmartDashboard.putNumber("Pivot Right Voltage", pivotMotorRight.getBusVoltage());
         SmartDashboard.putNumber("Pivot Left Voltage", pivotMotorLeft.getBusVoltage());
-
+        
     }
 
     //Manually controlling angle of pivot (operator controller during teleop)
@@ -81,34 +83,55 @@ public class PivotSubsystem extends SubsystemBase {
         return pivotAbsEncoder.getDistance() - offset;
     }
 
+    //reset the pivot encoder to the be 0-180 at illegal position
+    public void resetPivotEncoder() {
+        offset = pivotAbsEncoder.getDistance() - PivotConstants.kPivotOffset + 183;
+    }
+
     //Send arm to a specific setpoint
     public void goToSetpoint(double desPosition) {
         //desPosition = radians
         double output = pivotPIDController.calculate(getPivotAbsEncoder(), desPosition);
-        if(output > 0 && desPosition >= 160) {
-            pivotMotorRight.setVoltage(-0.03);
-            pivotMotorLeft.setVoltage(0.03);
-        } else if(desPosition < 91 && output < 0) {
+        if(output > 0 && getPivotAbsEncoder() >= 155) { 
+            System.out.println("Forward limiting");
+            // pivot going forward, slow so doesnt hit ground
+            pivotMotorRight.setVoltage(-0.4);
+            pivotMotorLeft.setVoltage(0.4);
+        } else if(desPosition < PivotConstants.kAmpPosition && output < 0) { 
+            System.out.println("Backwards limiting");
+
+            // pivot going backwards, slow so doesnt hit ground
             setPivotMotorNoBounds(MathMethods.signDouble(Math.cos(getPivotAbsEncoder()))*0.02 - PivotConstants.pivotCompensation * Math.cos(Math.toRadians(getPivotAbsEncoder())));
-        } else if(Math.abs(getPivotAbsEncoder()) - desPosition > PivotConstants.deadbandAngle){
-            pivotMotorRight.setVoltage(-0.7 * output);
-            pivotMotorLeft.setVoltage(0.7 * output);
+        } else if(Math.abs(getPivotAbsEncoder() - desPosition) > PivotConstants.deadbandAngle){
+            // pivot is freeeee
+            System.out.println("Pivot is Free");
+            pivotMotorRight.setVoltage(-output);
+            pivotMotorLeft.setVoltage(output);
         }
+        System.out.println("output: " + output);
+        System.out.println("actual, target " + getPivotAbsEncoder() + ", " + desPosition);
+    }
+
+    public boolean isAtSetpoint() {
+        return pivotPIDController.atSetpoint();
     }
 
     //TEST Feedforward and PID controller for pivot
     public void pivotWithPID(double desPosition) {
         //desPosition = radians
-        double output = pivotPIDController.calculate    (getPivotAbsEncoder(), desPosition);
-        System.out.println(pivotMotorLeft.get());
+        double output = pivotPIDController.calculate(getPivotAbsEncoder(), desPosition);
+        // System.out.println(pivotMotorLeft.get());
         if(output > 0 && desPosition >= 160) {
             pivotMotorRight.setVoltage(-0.03);
             pivotMotorLeft.setVoltage(0.03);
         } else if(desPosition < 91 && output < 0) {
             setPivotMotorNoBounds(MathMethods.signDouble(Math.cos(getPivotAbsEncoder()))*0.02 - PivotConstants.pivotCompensation * Math.cos(Math.toRadians(getPivotAbsEncoder())));
-        } else {
-            pivotMotorRight.setVoltage(-0.7 * output);
-            pivotMotorLeft.setVoltage(0.7 * output);
+        } else if (output > 0) {
+            pivotMotorRight.setVoltage(-1*output);
+            pivotMotorLeft.setVoltage(1*output);
+        } else if(output < 0) {
+            pivotMotorRight.setVoltage(-4*output);
+            pivotMotorLeft.setVoltage(4*output);
         }
       }
 

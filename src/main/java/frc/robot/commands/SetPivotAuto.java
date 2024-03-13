@@ -13,14 +13,14 @@ import frc.robot.subsystems.GoodPivot;
 
 //Set pivot to specific setpoints (intake, shoot up close, amp scoring)
 
-public class SetPivotCmd extends Command {
+public class SetPivotAuto extends Command {
   
   private final PivotSubsystem pivotSubsystem;
   //private final GoodPivot pivot;
   private final int position;
   private final double targetPosition;
 
-  public SetPivotCmd(PivotSubsystem pivotSubsystem, int position) {
+  public SetPivotAuto(PivotSubsystem pivotSubsystem, int position) {
     this.pivotSubsystem = pivotSubsystem;
     this.position = position;
 
@@ -48,6 +48,9 @@ public class SetPivotCmd extends Command {
   @Override
   public void execute() {
       pivotSubsystem.goToSetpoint(targetPosition);
+      if(Math.abs(this.position-targetPosition)<=5){
+        end(true);
+      }
   }
 
   @Override
