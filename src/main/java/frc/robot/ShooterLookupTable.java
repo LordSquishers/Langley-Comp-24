@@ -34,8 +34,8 @@ public class ShooterLookupTable {
         createLookupTable(lookupTable);
     }
 
-    public ActionSetpoint get(double distanceToTarget) {
-        return new ActionSetpoint(distanceToShooterRPM.get(distanceToTarget), distanceToPivotAngle.get(distanceToTarget));
+    public Constants.FiringSetpoint get(double distanceToTarget) {
+        return new Constants.FiringSetpoint(distanceToShooterRPM.get(distanceToTarget), distanceToPivotAngle.get(distanceToTarget));
     }
 
     private void createLookupTable(double[][] table) {
@@ -43,23 +43,6 @@ public class ShooterLookupTable {
             Double distance = t[0];
             distanceToShooterRPM.put(distance, t[1]);
             distanceToPivotAngle.put(distance, t[2]);
-        }
-    }
-
-    public static class ActionSetpoint {
-        private final double shooterRPM, pivotAngle;
-
-        public ActionSetpoint(double shooterRPM, double pivotAngle) {
-            this.shooterRPM = shooterRPM;
-            this.pivotAngle = pivotAngle;
-        }
-
-        public double getShooterRPM() {
-            return shooterRPM;
-        }
-
-        public double getPivotAngle() {
-            return pivotAngle;
         }
     }
 }
