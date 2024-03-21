@@ -47,6 +47,9 @@ public class TalonSwerve extends SubsystemBase {
             swerveDashboardTab.addDouble(
                     "Mod " + mod.moduleID + " Velocity", () -> mod.getState().speedMetersPerSecond);
         }
+
+        setName("Swerve");
+        swerveDashboardTab.add(this);
     }
 
     @Override
@@ -57,12 +60,12 @@ public class TalonSwerve extends SubsystemBase {
         odometry.update(getYaw(), getModulePositions());
     }
 
-    public void relativeDrive(ChassisSpeeds speeds, boolean isOpenLoop) {
+    public void relativeDrive(ChassisSpeeds speeds) {
         SwerveModuleState[] swerveModuleStates = KINEMATICS.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_VELOCITY_M_PER_S);
 
         for (TalonSwerveModule module : modules) {
-            module.setDesiredState(swerveModuleStates[module.moduleID], isOpenLoop);
+            module.setDesiredState(swerveModuleStates[module.moduleID], true);
         }
     }
 
@@ -80,7 +83,7 @@ public class TalonSwerve extends SubsystemBase {
         return odometry.getPoseMeters();
     }
 
-    public void setOdometry(Pose2d pose) {
+    public void setOdometryPose(Pose2d pose) {
         odometry.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
@@ -93,14 +96,14 @@ public class TalonSwerve extends SubsystemBase {
     }
 
     public Command manualRelativeDriveCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Double> rotationSpeed) {
-        return new RunCommand(() -> this.relativeDrive(new ChassisSpeeds(xSpeed.get() * MAX_VELOCITY_M_PER_S * MAXIMUM_DRIVER_VELOCITY_PERCENT, ySpeed.get() * MAX_VELOCITY_M_PER_S * MAXIMUM_DRIVER_VELOCITY_PERCENT, rotationSpeed.get() * MAX_ANGULAR_VELOCITY_RAD_PER_SEC * MAXIMUM_DRIVER_OMEGA_PERCENT), true), this).repeatedly();
+        return new RunCommand(() -> this.relativeDrive(new ChassisSpeeds(xSpeed.get() * MAX_VELOCITY_M_PER_S * MAXIMUM_DRIVER_VELOCITY_PERCENT, ySpeed.get() * MAX_VELOCITY_M_PER_S * MAXIMUM_DRIVER_VELOCITY_PERCENT, rotationSpeed.get() * MAX_ANGULAR_VELOCITY_RAD_PER_SEC * MAXIMUM_DRIVER_OMEGA_PERCENT)), this).repeatedly();
     }
 
     public Command manualAbsoluteDriveCommand(Supplier<Double> xSpeed, Supplier<Double> ySpeed, Supplier<Double> rotationSpeed) {
         return new RunCommand(() -> this.absoluteDrive(new ChassisSpeeds(xSpeed.get() * MAX_VELOCITY_M_PER_S * MAXIMUM_DRIVER_VELOCITY_PERCENT, ySpeed.get() * MAX_VELOCITY_M_PER_S * MAXIMUM_DRIVER_VELOCITY_PERCENT, rotationSpeed.get() * MAX_ANGULAR_VELOCITY_RAD_PER_SEC * MAXIMUM_DRIVER_OMEGA_PERCENT), true), this).repeatedly();
     }
 
-    private Rotation2d getYaw() { //TODO- check w/ 611 code
+    public Rotation2d getYaw() { //TODO- check w/ 611 code
         return Rotation2d.fromDegrees(-gyro.getYaw());
     }
 
@@ -112,6 +115,10 @@ public class TalonSwerve extends SubsystemBase {
         return positions;
     }
 
+    public void stopSwerveMotors() {
+        absoluteDrive(new ChassisSpeeds(0, 0, 0), true);
+    }
+
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (TalonSwerveModule module : modules) {
@@ -119,6 +126,10 @@ public class TalonSwerve extends SubsystemBase {
         }
 
         return states;
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return KINEMATICS.toChassisSpeeds(getModuleStates());
     }
 
     public void resetModulesToAbsolute() {

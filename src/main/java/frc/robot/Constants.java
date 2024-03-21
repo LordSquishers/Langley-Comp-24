@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -40,19 +41,18 @@ public final class Constants {
     }
 
     public static final class Intake {
-        public static final int INTAKE_MOTOR_CAN_ID = 4;
-        public static final int FEED_MOTOR_CAN_ID = 5;
+        public static final int INTAKE_MOTOR_CAN_ID = 10;
 
         public static final int BEAM_BREAK_DIO_CHANNEL = 1;
 
-        public static final double INTAKE_VOLT_PERCENTAGE = 0.6;
-        public static final double OUTTAKE_VOLT_PERCENTAGE = -0.4;
-        public static final double FEED_VOLT_PERCENTAGE = 0.6;
+        public static final double INTAKE_VOLT_PERCENTAGE = 0.65;
+        public static final double OUTTAKE_VOLT_PERCENTAGE = -0.65;
+        public static final double FEED_VOLT_PERCENTAGE = 0.65;
         public static final double OFF_VOLT_PERCENTAGE = 0.0; // for completion lol
     }
 
     public static final class Shooter { // SHOOTER RUNS IN RPM
-        public static final int MOTOR_CAN_ID = 3;
+        public static final int MOTOR_CAN_ID = 9;
 
         public static final boolean ENABLE_IDLE_WHEN_NOTE_PRESENT = true;
 
@@ -76,11 +76,11 @@ public final class Constants {
         public static final int LEFT_MOTOR_CAN_ID = 1, RIGHT_MOTOR_CAN_ID = 2;
         public static final int ABS_ENCODER_RIO_CHANNEL = 0;
 
-        public static final double MAX_VELOCITY_DEG_PER_SEC = 0;
-        public static final double MAX_ACCEL_DEG_PER_SEC_2 = 0;
+        public static final double MAX_VELOCITY_DEG_PER_SEC = 30;
+        public static final double MAX_ACCEL_DEG_PER_SEC_2 = 60;
 
         public static final double ABS_ENCODER_OFFSET = 0;
-        public static final double GOAL_ANGLE_TOLERANCE_DEG = 0.1;
+        public static final double GOAL_ANGLE_TOLERANCE_DEG = 0.5;
 
         public static final double ANGLE_STOW_DEG = 20;
         public static final double ANGLE_INTAKE_DEG = 0;
@@ -124,17 +124,28 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_INCHES * INCHES_TO_METERS * Math.PI;
         public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
         public static final double DRIVE_GEAR_RATIO = 8.14;
-        public static final double CANCODER_COUNTS_PER_REV = 2048.0;
+        public static final double CANCODER_COUNTS_PER_REV = 4096.0;
 
-        public static final double WHEEL_TO_WHEEL_DISTANCE_INCHES = 27.0;
+        public static final double WHEEL_TO_WHEEL_DISTANCE_INCHES = 21.0;
         public static final double WHEEL_TO_WHEEL_DISTANCE_METERS = WHEEL_TO_WHEEL_DISTANCE_INCHES * INCHES_TO_METERS;
 
         public static final double MAX_VELOCITY_M_PER_S = 5.4864;
         public static final double MAX_ACCELERATION_M_PER_S_2 = 3.0;
         public static final double MAX_ANGULAR_VELOCITY_RAD_PER_SEC = 10.0;
+        public static final double MAX_ANGULAR_ACCELERATION_RAD_PER_SEC_2 = 10.0;
 
         public static final double MAXIMUM_DRIVER_VELOCITY_PERCENT = 0.6;
         public static final double MAXIMUM_DRIVER_OMEGA_PERCENT = 0.6;
+
+        public static final double MAX_ALIGN_VELOCITY_PERCENT = 0.5;
+        public static final double MAX_ALIGN_ACCELERATION_PERCENT = 0.25;
+        public static final double MAX_ALIGN_OMEGA_PERCENT = 0.5;
+
+        public static final double PATH_REPLANNING_TOTAL_ERROR_THRESHOLD = 0.25;
+        public static final double PATH_REPLANNING_SPIKE_ERROR_THRESHOLD = 0.5;
+
+        public static final double ALIGN_ANGLE_TOLERANCE_DEG = 1.0;
+        public static final double NAVIGATE_POSITION_TOLERANCE_METERS = 0.05;
 
         public static final SwerveDriveKinematics KINEMATICS =
                 new SwerveDriveKinematics(
@@ -157,33 +168,46 @@ public final class Constants {
             public static final double kS_DRIVE_MOTOR = 0.32 / 12.0;
             public static final double kV_DRIVE_MOTOR = 1.51 / 12.0;
             public static final double kA_DRIVE_MOTOR = 0.27 / 12.0;
+
+            // Align Robot to Target PID
+            public static final double kP_ALIGN = 0.02;
+            public static final double kI_ALIGN = 0.0;
+            public static final double kD_ALIGN = 0.0;
+
+            // Align Robot to Target PID
+            public static final double kP_NAVIGATE = 0.02;
+            public static final double kI_NAVIGATE = 0.0;
+            public static final double kD_NAVIGATE = 0.0;
+
+            public static final com.pathplanner.lib.util.PIDConstants kPID_AUTO_TRANSLATION = new com.pathplanner.lib.util.PIDConstants(5.0, 0.0, 0.0);
+            public static final com.pathplanner.lib.util.PIDConstants kPID_AUTO_ROTATION = new com.pathplanner.lib.util.PIDConstants(5.0, 0.0, 0.0);
         }
 
         public static final class FrontLeft { // Module 0
-            public static final int DRIVE_MOTOR_ID = 1;
-            public static final int TURN_MOTOR_ID = 2;
-            public static final int CANCODER_ID = 10;
+            public static final int DRIVE_MOTOR_ID = 8;
+            public static final int TURN_MOTOR_ID = 7;
+            public static final int CANCODER_ID = 19;
             public static final double ANGULAR_OFFSET = -Math.PI / 2.0;
         }
 
         public static final class FrontRight { // Module 1
-            public static final int DRIVE_MOTOR_ID = 3;
-            public static final int TURN_MOTOR_ID = 4;
-            public static final int CANCODER_ID = 11;
+            public static final int DRIVE_MOTOR_ID = 2;
+            public static final int TURN_MOTOR_ID = 1;
+            public static final int CANCODER_ID = 16;
             public static final double ANGULAR_OFFSET = 0.0;
         }
 
         public static final class BackLeft { // Module 2
-            public static final int DRIVE_MOTOR_ID = 5;
-            public static final int TURN_MOTOR_ID = 6;
-            public static final int CANCODER_ID = 12;
+            public static final int DRIVE_MOTOR_ID = 6;
+            public static final int TURN_MOTOR_ID = 5;
+            public static final int CANCODER_ID = 17;
             public static final double ANGULAR_OFFSET = Math.PI;
         }
 
         public static final class BackRight { // Module 3
-            public static final int DRIVE_MOTOR_ID = 7;
-            public static final int TURN_MOTOR_ID = 8;
-            public static final int CANCODER_ID = 13;
+            public static final int DRIVE_MOTOR_ID = 4;
+            public static final int TURN_MOTOR_ID = 3;
+            public static final int CANCODER_ID = 17;
             public static final double ANGULAR_OFFSET = Math.PI / 2.0;
         }
 

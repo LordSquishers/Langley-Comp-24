@@ -30,7 +30,6 @@ public class Intake extends SubsystemBase {
 
     /* Initialize Motor Controller */
     private final CANSparkMax intakeMotor = new CANSparkMax(INTAKE_MOTOR_CAN_ID, CANSparkLowLevel.MotorType.kBrushless);
-    private final CANSparkMax feedMotor = new CANSparkMax(FEED_MOTOR_CAN_ID, CANSparkLowLevel.MotorType.kBrushless);
 
     public static Intake getInstance() {
         if (instance == null) instance = new Intake();
@@ -49,16 +48,12 @@ public class Intake extends SubsystemBase {
         switch (state) {
             case OFF: // no movement.
                 setIntakeMotorVoltage(OFF_VOLT_PERCENTAGE);
-                setFeedMotorVoltage(OFF_VOLT_PERCENTAGE);
             case INTAKE: // intake, but not feeder(?)
                 setIntakeMotorVoltage(INTAKE_VOLT_PERCENTAGE);
-                setFeedMotorVoltage(INTAKE_VOLT_PERCENTAGE); //TODO - maybe don't want this?
             case OUTTAKE: // clear note by fully outtaking.
                 setIntakeMotorVoltage(OUTTAKE_VOLT_PERCENTAGE);
-                setFeedMotorVoltage(OUTTAKE_VOLT_PERCENTAGE);
             case FEED: // feed note into shooter!
                 setIntakeMotorVoltage(FEED_VOLT_PERCENTAGE);
-                setFeedMotorVoltage(FEED_VOLT_PERCENTAGE);
         }
 
         postData();
@@ -115,14 +110,10 @@ public class Intake extends SubsystemBase {
         intakeMotor.setVoltage(volts);
     }
 
-    private void setFeedMotorVoltage(double volts) {
-        feedMotor.setVoltage(volts);
-    }
 
 
     private void postData() {
         SmartDashboard.putNumber("Intake Motor Voltage", intakeMotor.getBusVoltage());
-        SmartDashboard.putNumber("Feed Motor Voltage", feedMotor.getBusVoltage());
         SmartDashboard.putString("Intake State: ", state.toString());
         SmartDashboard.putString("Intake Status: ", status.toString());
         SmartDashboard.putBoolean("Note in Intake: ", beambreak.get());

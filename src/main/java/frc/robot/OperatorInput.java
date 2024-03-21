@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -49,6 +50,18 @@ public class OperatorInput {
         drivetrain.setDefaultCommand(
                 drivetrain.manualAbsoluteDriveCommand(driver::getLeftX, driver::getLeftY, driver::getRightX)
         );
+
+        Xbox.RB_BUTTON(driver).whileTrue(
+                drivetrain.alignRobotToTargetCommand(driver::getLeftX, driver::getLeftY, () -> {
+                    if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
+                        return Coordinates.RED_SPEAKER;
+                    } else {
+                        return Coordinates.BLUE_SPEAKER;
+                    }
+                }, true)
+        );
+
+        // Xbox.A_BUTTON(driver).whileTrue(drivetrain.chasePoseRobotRelativeCommand(notePosition));
     }
 
     private void configureShooterButtonBindings() {

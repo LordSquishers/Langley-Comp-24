@@ -23,7 +23,6 @@ import frc.robot.subsystems.Shooter;
  */
 public class RobotContainer {
 
-  //TODO - implement swerveee
   //TODO - implement vision!
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
