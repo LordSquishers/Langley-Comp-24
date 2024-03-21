@@ -11,8 +11,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.MathMethods;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.commands.MoveToSetPointCmd;
-import frc.robot.subsystems.GoodPivot;
+
 /*
  * NOTE:
  * 0 degrees = arm back parallel to ground
@@ -66,7 +65,9 @@ public class PivotControllerCmd extends Command{
     
     //**Keep arm in place when no controller input**
     else {
-      pivotSubsystem.setPivotMotorNoBounds(MathMethods.signDouble(Math.cos(pivotSubsystem.getPivotAbsEncoder()))*0.02 - PivotConstants.pivotCompensation * Math.cos(Math.toRadians(pivotSubsystem.getPivotAbsEncoder())));
+      pivotSubsystem.setPivotMotorNoBounds(
+        MathMethods.signDouble(Math.cos(pivotSubsystem.getPivotAbsEncoder())) * 0.02 
+        - PivotConstants.pivotCompensation * Math.cos(Math.toRadians(pivotSubsystem.getPivotAbsEncoder())));
     }
 
   }

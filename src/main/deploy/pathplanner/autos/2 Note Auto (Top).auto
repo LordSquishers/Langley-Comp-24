@@ -1,0 +1,88 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.36086297850199,
+      "y": 5.53
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Pivot To Shoot Up Close"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "TEST Ground Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Pivot To Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Straight Path (Top)"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "R2 To Shoot Path"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Pivot To Align And Shoot"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Two Note",
+  "choreoAuto": false
+}

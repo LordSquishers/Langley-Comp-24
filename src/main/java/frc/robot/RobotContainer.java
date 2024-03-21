@@ -47,20 +47,19 @@ import frc.robot.commands.SwerveControllerCmd;
 import frc.robot.commands.ShooterControllerCmd;
 import frc.robot.commands.PivotControllerCmd;
 import frc.robot.commands.ResetPivotCmd;
-import frc.robot.commands.SetPivotAuto;
-import frc.robot.commands.AutoClimbControllerCmd;
 import frc.robot.commands.ClimbAutoCmd;
 import frc.robot.commands.ClimbControllerCmd;
 import frc.robot.commands.ClimbSwitchDirCmd;
 import frc.robot.commands.SetPivotCmd;
 import frc.robot.commands.AutoAlignShootCmd;
+import frc.robot.commands.AutoAlignAmpCmd;
 import frc.robot.commands.IntakeCmd;
 
 //Subsystem Imports
 import frc.robot.subsystems.*;
 
 //Auto Commands
-import frc.robot.commands.ShootCmd;
+import frc.robot.commands.ShootAutoCmd;
 import frc.robot.commands.IntakeAutoCmd;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -126,15 +125,16 @@ public class RobotContainer {
     shooterSubsystem.setDefaultCommand(
       new ShooterControllerCmd(
         shooterSubsystem,
-        () -> operatorController.getRightBumper(),
         () -> operatorController.getLeftBumper(),
+        () -> operatorController.getRightBumper(),
         () -> false));
 
     intakeSubsystem.setDefaultCommand(
       new IntakeCmd(
         intakeSubsystem, 
         () -> 0.0, 
-        0));
+        0,
+        false));
 
     pivotSubsystem.setDefaultCommand(
       new PivotControllerCmd(
@@ -160,23 +160,42 @@ public class RobotContainer {
     //Named commands = commands other than driving around that still need to be executed in auto
 
     var pivotToIntake = new SetPivotCmd(pivotSubsystem, 0).withTimeout(1.5);
-    var pivotToShootUpClose = new SetPivotCmd(pivotSubsystem, 1).withTimeout(5);
-    var intake = new IntakeAutoCmd(intakeSubsystem, IntakeConstants.kIntakeMotorSpeed, 1);
-    var leftTelescopeDown = new AutoClimbControllerCmd(climbSubsystem, () -> true, false, "left");
+    var pivotToShootUpClose = new SetPivotCmd(pivotSubsystem, 1).withTimeout(1.5);
+
+    var intake = new IntakeAutoCmd(intakeSubsystem, -1, false).withTimeout(2.5);
+    var TESTgroundIntake = new SequentialCommandGroup(
+      new IntakeAutoCmd(intakeSubsystem, -1, true).withTimeout(4),
+      new ParallelCommandGroup(
+        new IntakeAutoCmd(intakeSubsystem, 1, false).withTimeout(0.4),
+        new ShootAutoCmd(shooterSubsystem, -1).withTimeout(0.4)));
+    var groundIntake = new IntakeAutoCmd(intakeSubsystem, -1, true).withTimeout(2.5);
+
+    var leftTelescopeDown = new ClimbAutoCmd(climbSubsystem, false, "left").withTimeout(0.3);
 
 
-    ParallelCommandGroup shoot = new ParallelCommandGroup(
-      new ShootCmd(shooterSubsystem, ShooterConstants.kShooterMotorSpeed).withTimeout(1.5),
+    var shoot = new ParallelCommandGroup(
+      new ShootAutoCmd(shooterSubsystem, 1).withTimeout(2),
       new SequentialCommandGroup(
         new WaitCommand(1),
-        new IntakeAutoCmd(intakeSubsystem, IntakeConstants.kIntakeMotorSpeed, 1).withTimeout(0.4)));
+        new IntakeAutoCmd(intakeSubsystem, -1, false).withTimeout(1)));
+
+    
+    var pivotToAlignShoot = new ParallelCommandGroup(
+      new AutoAlignShootCmd(limelightSubsystem, pivotSubsystem, shooterSubsystem).withTimeout(2.5),
+      new SequentialCommandGroup(
+        new WaitCommand(1.5),
+        new IntakeAutoCmd(intakeSubsystem, -1, false).withTimeout(1)));
 
 
     //Named Commands for PathPlanner
     NamedCommands.registerCommand("Pivot To Intake", pivotToIntake);
     NamedCommands.registerCommand("Pivot To Shoot Up Close", pivotToShootUpClose);
+    NamedCommands.registerCommand("Pivot To Align And Shoot", pivotToAlignShoot);
     NamedCommands.registerCommand("Shoot", shoot);
     NamedCommands.registerCommand("Intake", intake);
+    NamedCommands.registerCommand("TEST Ground Intake", TESTgroundIntake);
+    NamedCommands.registerCommand("Ground Intake", groundIntake);
+    NamedCommands.registerCommand("Left Telescope Down", leftTelescopeDown);
 
 
     // Configure the button bindings
@@ -205,26 +224,26 @@ public class RobotContainer {
     
     
     //Intake ring
-    new JoystickButton(operatorController, Buttons.B).whileTrue(new IntakeCmd(intakeSubsystem, 
-      () -> IntakeConstants.kIntakeMotorSpeed, -1));
-
-    //Outake ring
     new JoystickButton(operatorController, Buttons.X).whileTrue(new IntakeCmd(intakeSubsystem, 
-      () -> IntakeConstants.kIntakeMotorSpeed, 1));
+      () -> IntakeConstants.kIntakeMotorSpeed, -1, false));
+
+    //Outtake ring
+    new JoystickButton(operatorController, Buttons.B).whileTrue(new IntakeCmd(intakeSubsystem, 
+      () -> IntakeConstants.kIntakeMotorSpeed, 1, false));
+
+    //Ground intake (limited)
+    new JoystickButton(operatorController, Buttons.Y).whileTrue(new IntakeCmd(intakeSubsystem, 
+    () -> IntakeConstants.kIntakeMotorSpeed, -1, true));
 
 
-
-    //Shoot in ring
-    new JoystickButton(operatorController, Buttons.LB).whileTrue(new ShooterControllerCmd(shooterSubsystem, 
-    () -> true, () -> false, () -> false));
 
     //Shoot out ring
     new JoystickButton(operatorController, Buttons.RB).whileTrue(new ShooterControllerCmd(shooterSubsystem, 
-    () -> false, () -> true, () -> false));
+    () -> true, () -> false, () -> false));
 
-    //Shoot out extra torque
-    new JoystickButton(operatorController, Buttons.Y).whileTrue(new ShooterControllerCmd(shooterSubsystem, 
-    () -> false, () -> false, () -> true));
+    //Shoot in ring
+    new JoystickButton(operatorController, Buttons.LB).whileTrue(new ShooterControllerCmd(shooterSubsystem, 
+    () -> false, () -> true, () -> false));
 
 
 
@@ -240,6 +259,9 @@ public class RobotContainer {
 
     //Autoalign pivot
     new POVButton(operatorController, Buttons.LEFT_ARR).whileTrue(new AutoAlignShootCmd(limelightSubsystem, pivotSubsystem, shooterSubsystem));
+
+    //Autoalign amp
+    new POVButton(driverController, Buttons.LEFT_ARR).whileTrue(new AutoAlignAmpCmd(robotDrive, limelightSubsystem));
 
 
 
@@ -276,7 +298,7 @@ public class RobotContainer {
 
 
     //Rumble controllers
-    new JoystickButton(driverController, Buttons.Maria).whileTrue(new RumbleCmd(operatorController, 1, 1.00));
+    //new JoystickButton(driverController, Buttons.Maria).whileTrue(new RumbleCmd(operatorController, 1, 1.00));
     new JoystickButton(operatorController, Buttons.L3).whileTrue(new RumbleCmd(driverController, 1, 1.00));
     new JoystickButton(operatorController, Buttons.R3).whileTrue(new RumbleCmd(driverController, 2, 1.00));
 
@@ -286,10 +308,10 @@ public class RobotContainer {
     new JoystickButton(driverController, Buttons.X).toggleOnTrue(new AllForNaught(robotDrive));
 
     //Slow drive with d-pad
-    new POVButton(driverController, Buttons.DOWN_ARR).whileTrue(new SwerveControllerCmd(robotDrive, () -> -DriveConstants.kSlowDriveCoefficient, () -> 0.0, () -> 0.0, () -> true,  () -> false));
-    new POVButton(driverController, Buttons.UP_ARR).whileTrue(new SwerveControllerCmd(robotDrive, () -> DriveConstants.kSlowDriveCoefficient, () -> 0.0, () -> 0.0, () -> true,  () -> false));
-    new POVButton(driverController, Buttons.RIGHT_ARR).whileTrue(new SwerveControllerCmd(robotDrive, () -> 0.0, () -> -DriveConstants.kSlowDriveCoefficient, () -> 0.0, () -> true,  () -> false));
-    new POVButton(driverController, Buttons.LEFT_ARR).whileTrue(new SwerveControllerCmd(robotDrive, () -> 0.0, () -> DriveConstants.kSlowDriveCoefficient, () -> 0.0, () -> true,  () -> false));
+    // new POVButton(driverController, Buttons.DOWN_ARR).whileTrue(new SwerveControllerCmd(robotDrive, () -> -DriveConstants.kSlowDriveCoefficient, () -> 0.0, () -> 0.0, () -> true,  () -> false));
+    // new POVButton(driverController, Buttons.UP_ARR).whileTrue(new SwerveControllerCmd(robotDrive, () -> DriveConstants.kSlowDriveCoefficient, () -> 0.0, () -> 0.0, () -> true,  () -> false));
+    // new POVButton(driverController, Buttons.RIGHT_ARR).whileTrue(new SwerveControllerCmd(robotDrive, () -> 0.0, () -> -DriveConstants.kSlowDriveCoefficient, () -> 0.0, () -> true,  () -> false));
+    // new POVButton(driverController, Buttons.LEFT_ARR).whileTrue(new SwerveControllerCmd(robotDrive, () -> 0.0, () -> DriveConstants.kSlowDriveCoefficient, () -> 0.0, () -> true,  () -> false));
 
 
 
