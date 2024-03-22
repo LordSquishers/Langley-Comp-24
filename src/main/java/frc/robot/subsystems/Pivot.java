@@ -178,8 +178,6 @@ public class Pivot extends ProfiledPIDSubsystem {
 
         SmartDashboard.putNumber("Pivot Encoder (deg): ", getPosition());
         SmartDashboard.putBoolean("Pivot Encoder Connected? ", absoluteEncoder.isConnected());
-        SmartDashboard.putNumber("Pivot Right Voltage: ", leftPivotMotor.getBusVoltage());
-        SmartDashboard.putNumber("Pivot Left Voltage: ", rightPivotMotor.getBusVoltage());
 
         SmartDashboard.putString("Pivot State: ", state.toString());
         SmartDashboard.putString("Pivot Status: ", status.toString());

@@ -159,7 +159,6 @@ public class Shooter extends PIDSubsystem {
         SmartDashboard.putNumber("Shooter Goal (RPM): ", this.getController().getSetpoint());
 
         SmartDashboard.putNumber("Shooter Encoder (RPM): ", encoder.getVelocity());
-        SmartDashboard.putNumber("Shooter Motor Voltage", shooterMotor.getBusVoltage());
         SmartDashboard.putString("Shooter State: ", state.toString());
         SmartDashboard.putString("Shooter Status: ", status.toString());
     }

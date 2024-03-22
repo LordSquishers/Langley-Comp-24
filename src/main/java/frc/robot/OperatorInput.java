@@ -2,12 +2,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.event.BooleanEvent;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Pivot;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.*;
 
 import static frc.robot.Constants.OperatorInput.*;
 
@@ -31,6 +30,9 @@ public class OperatorInput {
     }
 
     public void configureButtonBindings() {
+        /* Climber Commands */
+        if (Constants.isSubsystemAvailable(Constants.SubsystemType.CLIMBER)) configureClimberButtonBindings();
+
         /* Pivot Commands */
         if (Constants.isSubsystemAvailable(Constants.SubsystemType.PIVOT)) configurePivotButtonBindings();
 
@@ -64,6 +66,14 @@ public class OperatorInput {
         // Xbox.A_BUTTON(driver).whileTrue(drivetrain.chasePoseRobotRelativeCommand(notePosition));
     }
 
+    private void configureClimberButtonBindings() {
+        var climber = Climber.getInstance();
+
+        // lower / raise climber.
+        Xbox.LB_BUTTON(operator).onTrue(climber.setStateCommand(Climber.State.STOW));
+        Xbox.RB_BUTTON(operator).onTrue(climber.setStateCommand(Climber.State.EXTEND));
+    }
+
     private void configureShooterButtonBindings() {
         var shooter = Shooter.getInstance();
 
@@ -94,7 +104,7 @@ public class OperatorInput {
         Xbox.A_BUTTON(operator).onTrue(intake.setStateCommand(Intake.State.INTAKE));
         Xbox.Y_BUTTON(operator).onTrue(intake.setStateCommand(Intake.State.OUTTAKE));
         // Feed note to score.
-        Xbox.RB_BUTTON(operator).onTrue(intake.setStateCommand(Intake.State.FEED));
+        Xbox.B_BUTTON(operator).onTrue(intake.setStateCommand(Intake.State.FEED));
     }
 
     public static final class Xbox {

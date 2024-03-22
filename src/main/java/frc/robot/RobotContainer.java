@@ -9,10 +9,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Pivot;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.*;
 
 
 /*
@@ -37,6 +34,7 @@ public class RobotContainer {
         case INTAKE -> Intake.getInstance();
         case SHOOTER -> Shooter.getInstance();
         case SWERVE_DRIVETRAIN -> Drivetrain.getInstance();
+        case CLIMBER -> Climber.getInstance();
         default -> throw new IllegalStateException("Subsystem does not exist: " + subsystemType);
       }
     }

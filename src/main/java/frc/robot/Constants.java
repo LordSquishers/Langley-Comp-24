@@ -27,10 +27,10 @@ public final class Constants {
         public static final double INCHES_TO_METERS = 0.0254;
     }
 
-    public static final SubsystemType[] ENABLED_SUBSYSTEMS = { PIVOT };
+    public static final SubsystemType[] ENABLED_SUBSYSTEMS = { SWERVE_DRIVETRAIN, INTAKE, PIVOT, SHOOTER, CLIMBER };
 
     public enum SubsystemType {
-        SWERVE_DRIVETRAIN, PIVOT, SHOOTER, INTAKE
+        SWERVE_DRIVETRAIN, PIVOT, SHOOTER, INTAKE, CLIMBER
     }
 
     public static boolean isSubsystemAvailable(SubsystemType type) {
@@ -99,6 +99,25 @@ public final class Constants {
             public static final double kG_VOLTS = 0;
             public static final double kV_VOLT_SEC_PER_DEG = 0;
             public static final double kA_VOLT_SEC_2_PER_DEG = 0;
+        }
+    }
+
+    public static final class Climber { // CLIMBER RUNS IN DEGREES //
+        public static final int LEFT_MOTOR_CAN_ID = 20, RIGHT_MOTOR_CAN_ID = 21;
+        public static final int LEFT_LIMIT_SWITCH_DIO = 2, RIGHT_LIMIT_SWITCH_DIO = 3;
+
+        public static final double MAX_VELOCITY_DEG_PER_SEC = 30;
+        public static final double MAX_ACCEL_DEG_PER_SEC_2 = 60;
+
+        public static final double GOAL_ANGLE_TOLERANCE_DEG = 0.5;
+
+        public static final double MAXIMUM_CLIMBER_POSITION_DEG = 1080; // number of motor revs x 360 deg
+        public static final double MINIMUM_CLIMBER_POSITION_DEG = 0;
+
+        public static final class PIDConstants {
+            public static final double kP = 0;
+            public static final double kI = 0;
+            public static final double kD = 0;
         }
     }
 
