@@ -145,6 +145,7 @@ public class DriveSubsystem extends SubsystemBase {
 
           var alliance = DriverStation.getAlliance();
           if (alliance.isPresent()) {
+            // System.out.println("true");
             return alliance.get() == DriverStation.Alliance.Red;
           }
           return false;
@@ -162,6 +163,7 @@ public class DriveSubsystem extends SubsystemBase {
         rearRight.getPosition(),
         rearLeft.getPosition()
       }, aprilPose2d);
+      // m_gyro.setAngleAdjustment(aprilPose2d.getRotation().getDegrees());
   }
 
   
@@ -186,7 +188,7 @@ public class DriveSubsystem extends SubsystemBase {
       SequentialCommandGroup SequentialCommandOutput = new SequentialCommandGroup(new InstantCommand(() -> resetOdometry(path.getInitialPose())),
                                                                                     swerveControllerCommand,
                                                                                     new InstantCommand(() -> stopModules()));
-      System.out.println(path.getInitialPose());
+      // System.out.println(path.getInitialPose());
       return SequentialCommandOutput;
   }
 
@@ -210,7 +212,7 @@ public class DriveSubsystem extends SubsystemBase {
       SequentialCommandGroup SequentialCommandOutput = new SequentialCommandGroup(new InstantCommand(() -> resetOdometry(startPose)),
                                                                                     swerveControllerCommand,
                                                                                     new InstantCommand(() -> stopModules()));
-      System.out.println(path.getInitialPose());
+      // System.out.println(path.getInitialPose());
       return SequentialCommandOutput;
   }
 
@@ -440,8 +442,6 @@ public class DriveSubsystem extends SubsystemBase {
     double frontLeftDesAngle = DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad;
     SwerveModuleState frontLeftDesState = new SwerveModuleState(0.001, new Rotation2d(frontLeftDesAngle));
     frontLeft.resetInitModule(frontLeftDesState, frontLeftDesAngle);
-
-    System.out.println("Init Module Reset Test");
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {

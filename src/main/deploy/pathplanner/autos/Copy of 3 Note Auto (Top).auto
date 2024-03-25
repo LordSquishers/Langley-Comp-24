@@ -12,6 +12,18 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Left Telescope Down"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -75,7 +87,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Pivot To Align And Shoot"
+                  "name": "Pivot To Shoot 3.0.1"
                 }
               },
               {
@@ -83,14 +95,21 @@
                 "data": {
                   "pathName": "Mid to Right"
                 }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot"
+                      }
+                    }
+                  ]
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
           }
         },
         {
@@ -114,12 +133,6 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.8
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "MidtoLeft2"
@@ -138,9 +151,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Pivot To Align And Shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Pivot To Shoot Up Close"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              }
+            ]
           }
         }
       ]
